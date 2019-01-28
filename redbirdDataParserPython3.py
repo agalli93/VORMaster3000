@@ -7,15 +7,23 @@
 #   \$$$  /  $$ |  $$ |$$ |  $$ |      $$ |\$  /$$ |$$ |  $$ |$$\   $$ |  $$ |   $$ |      $$ |  $$ |      $$\   $$ |$$ |\$$$ |$$ |\$$$ |$$ |\$$$ |
 #    \$  /    $$$$$$  |$$ |  $$ |      $$ | \_/ $$ |$$ |  $$ |\$$$$$$  |  $$ |   $$$$$$$$\ $$ |  $$ |      \$$$$$$  |\$$$$$$  /\$$$$$$  /\$$$$$$  /
 #     \_/     \______/ \__|  \__|      \__|     \__|\__|  \__| \______/   \__|   \________|\__|  \__|       \______/  \______/  \______/  \______/                                                                                                                                          
-                                                                                                                                                                                                                                                                                             
+
+#Now with Python 3! **NOTE THIS PROGRAM IS UNTESTED WITH LIVE WEBPAGE BUT SHOULD WORK**
+
 import time
 import csv
 import os
 import datetime
 import math
+import sys
 
 #Using selenium to run a chrome instance in python that can read the Javascript generated HTML 
 from selenium import webdriver
+
+#This code is for Python 3 so if it's below 3, quit. 
+if(sys.version_info.major < 3):
+	print("You need python 3 or greater for this code")
+	sys.exit()
 
 #Redbird URL where the data is sounced from
 link = 'http://sim.redbirdflight.com/apps/InstructorStation/?/'
@@ -29,9 +37,9 @@ driver = webdriver.Chrome()
 driver.get(link)
 
 #Inputs from the user to write into the file and file name 
-contestantName = raw_input("What is the contestant name? ")
-contestantID = raw_input("What is the contestant ID? ")
-School = raw_input("What is the contestant's school? ")
+contestantName = input("What is the contestant name? ")
+contestantID = input("What is the contestant ID? ")
+School = input("What is the contestant's school? ")
 
 #Check to ensure we're not overwriting a already created contestant file 
 iteration = 1
@@ -42,7 +50,7 @@ while(True):
 	else:
 	    break
 
-file = open('%s_%s_Ground_Trainer_%d.csv' % (contestantID,contestantName,iteration) , mode='wb')
+file = open('%s_%s_Ground_Trainer_%d.csv' % (contestantID,contestantName,iteration) , mode='w', newline	= '')
 
 #CSV creation and headers
 employee_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -50,7 +58,7 @@ employee_writer.writerow([contestantName, contestantID, School, 'Ground Trainer 
 employee_writer.writerow(['Time', 'HDG', 'ALT', 'IAS'])
 
 #When ready, begin. Little drop down thing on the top of website with the live stats needs to be open 
-raw_input("When ready, press enter to begin.  CHECK STATS ARE OPEN ON WEBPAGE!!!!!!")
+input("When ready, press enter to begin.  CHECK STATS ARE OPEN ON WEBPAGE!!!!!!")
 
 #Using counter to detect the next time slice to take a datapoint. This eliminates a compounding error that would occur if we took 1 second plus whatever time the last datapoint was. 
 counter = 0
@@ -58,14 +66,14 @@ counter = 0
 starttime = time.time()
 
 #Limiting time of data collection to 10:15 since thats the Fall 2018 NIFA Region 7 pattern 
-while counter<=615:
+while counter<=70:
 	#Retrieve the most recent page HTML
 	p_element = driver.page_source
 
 	#If the next datapoint that should be collected has occured, collect it and increment the counter for the next time slice. 
 	if time.time()-starttime >= counter:
-		counterMinutes = counter/60
-		counterSeconds = counter - counterMinutes*60
+		counterMinutes = counter//60.0
+		counterSeconds = (counter - counterMinutes*60.0)
 		counterTime = "%d:%02d" % (counterMinutes,counterSeconds)
 
 		index = p_element.find(headingString)
@@ -80,13 +88,18 @@ while counter<=615:
 		endIndex = p_element.find("<",index+len(IASString))
 		airspeed = p_element[index+len(IASString):endIndex]
 
+		#Fixed values for testing data output
+		#heading = 270
+		#altitude = 5000
+		#airspeed = 145
+
 		#Write it to the CSV and to the console 
 		employee_writer.writerow([counterTime, heading, altitude, airspeed])
-		print "Time: "+counterTime, "; Heading", heading, "; Altitude", altitude, "; Airspeed (IAS)", airspeed	
+		print("Time: "+counterTime, "; Heading", heading, "; Altitude", altitude, "; Airspeed (IAS)", airspeed)
 
 		counter += 1 
 
 #Sanity check for the total time elapsed in the sim. 		
-print time.time()-starttime
-print "Flight completed."
+print(time.time()-starttime)
+print("Flight completed.")
 driver.quit()
