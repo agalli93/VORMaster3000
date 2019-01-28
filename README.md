@@ -10,7 +10,7 @@ Either Python 2 or 3 may be used for this. If using python 3, note the code hasn
 
 Module Selenium is required to run this. Google Chrome on the machine this is run on is *likely* also required. Ensure the chrome driver for Selenium is included here and should be contained in the same dir as the .py ran. 
 
-To use, ensure python 2 or 3 is installed. Run from the command line or double click if the .py file is already associated in your OS.  Follow the prompts and ensure the dropdown containing the data values is dropped down in the Chrome window opened by the program (we didn't automate that, sorry.) 
+To use, ensure python 2 or 3 is installed. Run from the command line.  Follow the prompts and ensure the dropdown containing the data values is dropped down in the Chrome window opened by the program (we didn't automate that, sorry.) 
 
 
 Written by Alessandro Galli and Mark Hsiung (https://github.com/heeshung)
