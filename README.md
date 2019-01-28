@@ -6,4 +6,4 @@ output in CSV format for import into excel.
 
 Collection time will need to be edited in the future when different patterns are used. 
 
-Written by Alessandro Galli and Mark Hsiung 
+Written by Alessandro Galli and Mark Hsiung (https://github.com/heeshung)
